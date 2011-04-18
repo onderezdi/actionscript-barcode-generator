@@ -1,50 +1,110 @@
+/*
+	actionscript barcode generator
+	ported from jQuery barcode plug-in (http://barcode-coder.com/en/barcode-jquery-plugin-201.html)
+
+    Copyright (C) <2011>  <Önder Ezdi>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.onderezdi.utils.barcodes
 {
+	
 	import flash.display.Sprite;
-	/**
-	$(CBI)* ...
-	$(CBI)* @author Sentinel
-	$(CBI)*/
+	import flash.text.TextField;
+	
+	
 	public class Barcode extends Sprite
 	{
 		
 		private var _barcodeText:String;
 		private var _type:String;
 		private var _barcodeHeight:Number;
-		private var currentBarcode:BarcodeBase;
 		private var _barcodeColor:uint;
 		private var _barThickness:Number;
 		private var _addQuietZone:Boolean;
+		private var hri:String;
 		
-		
-		public function Barcode(bText:String="1234567890", bType:String=BarcodeType.CODE39, h:Number=50) 
+		/*
+		 * Barcode generator constructor class
+		 * barcodes can be generated directly by the given parameters
+		 * bText: barcode string to be decoded
+		 * bType: barcode type, types has been defined at constant variables in BarcodeTypes class 
+		 * bHeight: barcodes bar height
+		 * bColor: barcodes bar color
+		 * bThickness: bar thickness of barcodes.
+		*/
+		public function Barcode(bText:String="1234567890", bType:String=BarcodeType.CODE39, bHeight:Number=50, bColor:uint=0x000000, bThickness:Number=1) 
 		{
-			_barcodeText = barcodeText;
-			type = bType;
-			_barcodeHeight = h;
-			_barcodeColor = 0x000000;
-			_barThickness = 1;
+			_barcodeText = bText;
+			_type = bType;
+			_barcodeHeight = bHeight;
+			_barcodeColor = bColor;
+			_barThickness = bThickness;
+			_barcodeColor = bColor;
+			
+			draw();
 		}
 		
+		/*
+		 * returns raw barcode text
+		*/
 		public function get barcodeText():String { return _barcodeText; }
 		
+		/*
+		 * returns barcode text (hri)
+		*/
+		public function get barcodeTextHRI():String { return hri; }
+		
+		/*
+		 * String - barcode text
+		*/
 		public function set barcodeText(value:String):void 
 		{
 			_barcodeText = value;
+			draw();
 		}
 		
+		/*
+		 * barcode type
+		 * types defined in BarcodeType as contant variables
+		 * 
+		*/
 		public function get type():String { return _type; }
 		
+		/*
+		 * returns barcode type
+		 * types defined in BarcodeType as contant variables
+		*/
 		public function set type(value:String):void 
 		{
 			_type = value;
+			draw();
 		}
 		
+		/*
+		 * bar color of barcode
+		*/
 		public function get barcodeColor():uint { return _barcodeColor; }
 		
+		/*
+		 * returns bar color of barcode
+		*/
 		public function set barcodeColor(value:uint):void 
 		{
 			_barcodeColor = value;
+			draw();
 		}
 		
 		public function get addQuietZone():Boolean { return _addQuietZone; }
@@ -52,21 +112,32 @@ package com.onderezdi.utils.barcodes
 		public function set addQuietZone(value:Boolean):void 
 		{
 			_addQuietZone = value;
+			draw();
 		}
 		
+		/*
+		 * return width of single barcode bar or dot
+		*/
 		public function get barThickness():Number { return _barThickness; }
 		
+		/*
+		 * sets width of single barcode bar or dot
+		*/
 		public function set barThickness(value:Number):void 
 		{
 			_barThickness = value;
+			draw();
 		}
 		
+		/*
+		 * draws barcode
+		*/
 		public function draw():void {
 			graphics.clear();
 			
 			var digit:String = "";
 			var digit2d:Array;
-			var hri:String = "";
+			hri = "";
 			var code:String = barcodeText;
 			var crc:Boolean = true;
 			var rect:Boolean = false;
@@ -136,7 +207,7 @@ package com.onderezdi.utils.barcodes
 			}
 			
 			var i:int;
-			if(b2d){
+			if(b2d){ //drawind 1d barcodes
 				graphics.clear();
 				for (i = 0; i < digit2d.length; i++) 
 				{
@@ -151,7 +222,7 @@ package com.onderezdi.utils.barcodes
 						currentWidth += _barThickness;
 					}
 				}
-			} else {
+			} else { //drawing 2d barcodes
 				graphics.clear();
 				var currentWidth:Number = 0;
 				for (i = 0; i < digit.length; i++) {
